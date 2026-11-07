@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Chunk{% endblock %}
+{% block body %}
+<h1>Chunk with context</h1>
+{% if doc_id %}<p class="muted"><a href="/doc/{{ doc_id | urlq }}">← whole document</a></p>{% endif %}
+{% for c in chunks %}
+<div class="card chunk{% if c.chunk_id == current %} current{% endif %}">
+  <div class="muted">#{{ c.ordinal }}{% if c.heading_path %} · {{ c.heading_path }}{% endif %}
+    {% if c.chunk_id == current %}· <strong>selected</strong>{% endif %}</div>
+  {{ c.text }}
+</div>
+{% endfor %}
+{% endblock %}

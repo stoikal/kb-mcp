@@ -107,6 +107,16 @@ def get_document(doc_id: str) -> dict:
 
 
 @mcp.tool()
+def list_chunks(doc_id: str) -> dict:
+    """A document's metadata and all its chunks in order (for browsing)."""
+    store = _retriever().store
+    doc = store.get_document(doc_id)
+    if doc is None:
+        raise ToolError(f"unknown document id {doc_id!r}")
+    return {"document": _doc_dict(doc), "chunks": [_chunk_dict(c) for c in store.iter_chunks(doc_id)]}
+
+
+@mcp.tool()
 def list_documents(collection: str | None = None) -> list[dict]:
     """List indexed documents, optionally within one collection."""
     return [_doc_dict(d) for d in _retriever().store.list_documents(collection)]

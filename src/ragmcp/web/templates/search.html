@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Search{% endblock %}
+{% block body %}
+<h1>Search</h1>
+<form class="card" method="get" action="/search">
+  <label for="q">Query</label>
+  <input id="q" type="search" name="q" value="{{ q }}" autofocus required>
+  <div class="row">
+    <div><label for="mode">Mode</label>
+      <select id="mode" name="mode">
+        {% for m in ["hybrid", "vector", "keyword"] %}<option value="{{ m }}"{% if m == mode %} selected{% endif %}>{{ m }}</option>{% endfor %}
+      </select></div>
+    <div><label for="top_k">Results</label><input id="top_k" type="number" name="top_k" min="1" max="50" value="{{ top_k }}"></div>
+    <div><label for="collection">Collection (optional)</label><input id="collection" type="text" name="collection" value="{{ collection }}"></div>
+  </div>
+  <button type="submit">Search</button>
+</form>
+
+{% if hits is not none %}
+  {% if hits %}
+    {% for h in hits %}
+    <div class="card">
+      <div><strong>{{ loop.index }}. <a href="/chunk/{{ h.chunk_id | urlq }}">{{ h.title }}</a></strong>
+        <span class="pill">score {{ "%.4f" | format(h.score) }}</span></div>
+      <div class="muted" style="overflow-wrap:anywhere">{{ h.source }}{% if h.heading_path %} · {{ h.heading_path }}{% endif %}</div>
+      <div>{{ h.text | snippet }}</div>
+    </div>
+    {% endfor %}
+  {% else %}<p class="muted">No results.</p>{% endif %}
+{% endif %}
+{% endblock %}

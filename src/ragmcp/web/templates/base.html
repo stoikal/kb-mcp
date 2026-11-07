@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}ragmcp{% endblock %} · ragmcp</title>
+<style>
+  :root { --bg:#fafafa; --fg:#1d2330; --muted:#657089; --line:#dde1ea; --card:#fff; --accent:#2a5bd7; --bad:#b3261e; --ok:#1b7f3b; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#14171e; --fg:#e6e9f0; --muted:#98a1b5; --line:#2b3140; --card:#1c202a; --accent:#7aa2ff; --bad:#ff8a80; --ok:#6fd48a; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.5 system-ui, sans-serif; }
+  header { border-bottom:1px solid var(--line); background:var(--card); }
+  nav { max-width:56rem; margin:0 auto; padding:.75rem 1rem; display:flex; gap:1.25rem; align-items:center; flex-wrap:wrap; }
+  nav strong { margin-right:auto; }
+  main { max-width:56rem; margin:0 auto; padding:1.25rem 1rem 4rem; }
+  a { color:var(--accent); }
+  h1 { font-size:1.4rem; margin:.2rem 0 1rem; }
+  h2 { font-size:1.1rem; margin:1.6rem 0 .6rem; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:1rem; margin:0 0 1rem; }
+  label { display:block; font-size:.85rem; color:var(--muted); margin:.6rem 0 .2rem; }
+  input[type=text], input[type=url], input[type=search], input[type=number], input[type=file], select, textarea {
+    width:100%; padding:.5rem .6rem; border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--fg); font:inherit; }
+  textarea { min-height:9rem; }
+  .row { display:flex; gap:.75rem; flex-wrap:wrap; } .row > div { flex:1 1 9rem; }
+  button { margin-top:.8rem; padding:.5rem 1rem; border:0; border-radius:6px; background:var(--accent); color:#fff; font:inherit; cursor:pointer; }
+  button.danger { background:var(--bad); }
+  .ok { color:var(--ok); } .bad { color:var(--bad); } .muted { color:var(--muted); font-size:.9rem; }
+  table { width:100%; border-collapse:collapse; } th, td { text-align:left; padding:.45rem .4rem; border-bottom:1px solid var(--line); vertical-align:top; }
+  .chunk { white-space:pre-wrap; overflow-wrap:anywhere; }
+  .chunk.current { border-left:4px solid var(--accent); }
+  .pill { display:inline-block; padding:0 .5rem; border:1px solid var(--line); border-radius:99px; font-size:.8rem; color:var(--muted); }
+</style>
+</head>
+<body>
+<header><nav>
+  <strong>ragmcp</strong>
+  <a href="/upload">Upload</a><a href="/browse">Browse</a><a href="/search">Search</a>
+</nav></header>
+<main>
+{% block body %}{% endblock %}
+</main>
+</body>
+</html>

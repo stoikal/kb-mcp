@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Upload{% endblock %}
+{% block body %}
+<h1>Add to the knowledge base</h1>
+
+{% if error %}<div class="card bad" role="alert">{{ error }}</div>{% endif %}
+{% if result %}
+<div class="card" role="status">
+  <strong class="ok">Ingest result: {{ result.status }}</strong>
+  <div class="muted">{{ result.chunks }} chunk(s) ·
+    <a href="/doc/{{ result.doc_id | urlq }}">view document</a></div>
+</div>
+{% endif %}
+
+<h2>File</h2>
+<form class="card" method="post" action="/upload/file" enctype="multipart/form-data">
+  <label for="f-file">File ({{ accept }})</label>
+  <input id="f-file" type="file" name="file" accept="{{ accept }}" required>
+  <div class="row">
+    <div><label for="f-col">Collection</label><input id="f-col" type="text" name="collection" value="default"></div>
+    <div><label for="f-tags">Tags (comma separated)</label><input id="f-tags" type="text" name="tags"></div>
+  </div>
+  <button type="submit">Upload</button>
+</form>
+
+<h2>URL</h2>
+<form class="card" method="post" action="/upload/url">
+  <label for="u-url">Web page, PDF or DOCX URL (public addresses only)</label>
+  <input id="u-url" type="url" name="url" placeholder="https://example.com/page" required>
+  <div class="row">
+    <div><label for="u-col">Collection</label><input id="u-col" type="text" name="collection" value="default"></div>
+    <div><label for="u-tags">Tags</label><input id="u-tags" type="text" name="tags"></div>
+  </div>
+  <button type="submit">Fetch and ingest</button>
+</form>
+
+<h2>Paste text</h2>
+<form class="card" method="post" action="/upload/text">
+  <div class="row">
+    <div><label for="t-source">Source label (used for citation and re-ingest)</label><input id="t-source" type="text" name="source" required></div>
+    <div><label for="t-title">Title (optional)</label><input id="t-title" type="text" name="title"></div>
+  </div>
+  <label for="t-text">Text (markdown headings are kept)</label>
+  <textarea id="t-text" name="text" required></textarea>
+  <div class="row">
+    <div><label for="t-col">Collection</label><input id="t-col" type="text" name="collection" value="default"></div>
+    <div><label for="t-tags">Tags</label><input id="t-tags" type="text" name="tags"></div>
+  </div>
+  <button type="submit">Ingest text</button>
+</form>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Browse{% endblock %}
+{% block body %}
+<h1>Browse</h1>
+{% if deleted %}<div class="card ok" role="status">Document deleted.</div>{% endif %}
+
+<h2>Collections</h2>
+{% if counts %}
+<div class="card">
+  <table>
+    {% for name, n in counts.items() %}
+    <tr><td><a href="/browse?collection={{ name | urlq }}">{{ name }}</a>{% if name == collection %} <span class="pill">open</span>{% endif %}</td>
+        <td class="muted">{{ n }} document(s)</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% else %}<p class="muted">Nothing indexed yet. <a href="/upload">Upload something.</a></p>{% endif %}
+
+{% if collection %}
+<h2>Documents in “{{ collection }}”</h2>
+<div class="card">
+  {% if docs %}
+  <table>
+    <tr><th>Title</th><th>Source</th><th>Tags</th><th>Ingested</th></tr>
+    {% for d in docs %}
+    <tr><td><a href="/doc/{{ d.doc_id | urlq }}">{{ d.title }}</a></td>
+        <td class="muted" style="overflow-wrap:anywhere">{{ d.source }}</td>
+        <td>{% for t in d.tags %}<span class="pill">{{ t }}</span> {% endfor %}</td>
+        <td class="muted">{{ d.ingested_at[:10] }}</td></tr>
+    {% endfor %}
+  </table>
+  {% else %}<span class="muted">No documents.</span>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

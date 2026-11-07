@@ -25,7 +25,7 @@ from ragmcp.store.memory import MemoryStore
 
 ADMIN = "admin-token-0123456789abcdefghij"
 READER = "reader-token-0123456789abcdefghi"
-READER_TOOLS = {"search", "get_chunk", "get_document", "list_documents", "list_collections", "stats"}
+READER_TOOLS = {"search", "get_chunk", "get_document", "list_chunks", "list_documents", "list_collections", "stats"}
 
 
 class FakeEmbedder:

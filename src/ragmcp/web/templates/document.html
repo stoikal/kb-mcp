@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ doc.title }}{% endblock %}
+{% block body %}
+<p class="muted"><a href="/browse?collection={{ doc.collection | urlq }}">← {{ doc.collection }}</a></p>
+<h1>{{ doc.title }}</h1>
+<div class="muted" style="overflow-wrap:anywhere">Source: {{ doc.source }} · ingested {{ doc.ingested_at[:19] }} ·
+  {{ chunks | length }} chunk(s){% for t in doc.tags %} · <span class="pill">{{ t }}</span>{% endfor %}</div>
+
+<form method="post" action="/doc/{{ doc.doc_id | urlq }}/delete"
+      onsubmit="return confirm('Delete this document and all its chunks?');">
+  <button class="danger" type="submit">Delete document</button>
+</form>
+
+{% for c in chunks %}
+<div class="card" id="c{{ c.ordinal }}">
+  <div class="muted">#{{ c.ordinal }}{% if c.heading_path %} · {{ c.heading_path }}{% endif %}
+    · <a href="/chunk/{{ c.chunk_id | urlq }}">context</a></div>
+  <div class="chunk">{{ c.text }}</div>
+</div>
+{% endfor %}
+{% endblock %}

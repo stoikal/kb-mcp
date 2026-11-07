@@ -8,11 +8,14 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "fastapi>=0.162.2",
+    "jinja2>=3.1.6",
     "mcp[cli]>=2.3.0",
     "pgvector>=0.3",
     "psycopg[binary]>=3.2",
     "pypdf>=7.0.0",
     "python-docx>=1.2.0",
+    "python-multipart>=0.0.33",
     "sentence-transformers>=3",
     "trafilatura>=2.3.1",
 ]
@@ -20,6 +23,7 @@ dependencies = [
 [project.scripts]
 ragmcp = "ragmcp:main"
 ragmcp-eval = "ragmcp.evalset:main"
+ragmcp-web = "ragmcp.web:main"
 
 [build-system]
 requires = ["uv_build>=0.13.7,<0.14.0"]
