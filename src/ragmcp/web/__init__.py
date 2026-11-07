@@ -37,6 +37,15 @@ def _tags(raw: str) -> list[str] | None:
     return tags or None
 
 
+def _origin(url: str) -> tuple[str, str, int]:
+    """Scheme + lowercase host + effective port, so quirks like a stripped default
+    port or case differences still count as same-origin."""
+    parts = urlsplit(url.strip())
+    scheme = parts.scheme.lower() or "http"
+    host = (parts.hostname or "").lower()
+    port = parts.port or (443 if scheme == "https" else 80)
+    return (scheme, host, port)
+
 def _hostname(netloc: str) -> str:
     return urlsplit(f"//{netloc}").hostname or ""
 
@@ -64,7 +73,8 @@ def create_app(
         if request.method not in ("GET", "HEAD", "OPTIONS"):
             # Browsers always send Origin on cross-site POSTs; require same-origin when present (CSRF).
             origin = request.headers.get("origin")
-            if origin and urlsplit(origin).netloc != host:
+            if origin and _origin(origin) != _origin(f"http://{host}"):
+                log.warning("cross-origin refused: origin=%r host=%r", origin, host)
                 return HTMLResponse("Cross-origin request refused", status_code=403)
         response = await call_next(request)
         response.headers["X-Frame-Options"] = "DENY"
