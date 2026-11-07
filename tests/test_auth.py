@@ -25,7 +25,6 @@ from ragmcp.store.memory import MemoryStore
 
 ADMIN = "admin-token-0123456789abcdefghij"
 READER = "reader-token-0123456789abcdefghi"
-ADMIN_TOOLS = {"ingest_text", "ingest_file", "delete_document", "reindex"}
 READER_TOOLS = {"search", "get_chunk", "get_document", "list_documents", "list_collections", "stats"}
 
 
@@ -100,13 +99,15 @@ def test_admin_sees_admin_tools_but_not_stdio_only(base_url):
         return {t.name for t in (await s.list_tools()).tools}
 
     names = _session(base_url, ADMIN)(fn)
-    assert names == READER_TOOLS | {"ingest_text", "delete_document", "reindex"}  # ingest_file is stdio-only
+    assert names == READER_TOOLS | {"ingest_text", "ingest_url", "ingest_upload", "delete_document", "reindex"}  # ingest_file is stdio-only
 
 
 @pytest.mark.parametrize("tool,args", [
     ("ingest_text", {"text": "hello", "source": "x"}),
     ("delete_document", {"doc_id": "abc"}),
     ("reindex", {}),
+    ("ingest_url", {"url": "https://example.com/"}),
+    ("ingest_upload", {"filename": "a.txt", "content_base64": "aGk="}),
     ("ingest_file", {"path": "/etc/hostname"}),
 ])
 def test_reader_cannot_call_admin_tools(base_url, tool, args):

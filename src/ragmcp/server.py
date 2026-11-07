@@ -1,6 +1,8 @@
 """MCP server exposing ingestion and retrieval. No LLM calls happen here."""
 
 import argparse
+import base64
+import binascii
 from functools import lru_cache
 from typing import Literal
 
@@ -10,6 +12,7 @@ from mcp.server.mcpserver.exceptions import ToolError
 from . import __version__
 from .auth import BearerAuthMiddleware, RateLimiter, TokenRegistry, role_policy
 from .config import settings
+from .ingest.fetch import BlockedURL, safe_fetch
 from .ingest.pipeline import IngestPipeline
 from .ingest.embedder import SentenceTransformerEmbedder
 from .models import Chunk, Document, Filters, SearchHit
@@ -120,10 +123,57 @@ def ingest_text(text: str, source: str, title: str | None = None,
                 collection: str = "default", tags: list[str] | None = None) -> dict:
     """Parse, chunk, embed and store text. Re-ingesting unchanged text is a no-op.
     `source` is a label used for citation and idempotency (e.g. a name or URL)."""
-    if len(text) > settings.max_doc_chars:
-        raise ToolError(f"document too large: {len(text)} chars (max {settings.max_doc_chars})")
+    _check_chars(text)
     r = _pipeline().ingest_text(text, source, title, collection, tags)
     return {"doc_id": r.doc_id, "status": r.status, "chunks": r.chunks}
+
+
+def _check_chars(text: str) -> None:
+    if len(text) > settings.max_doc_chars:
+        raise ToolError(f"document too large: {len(text)} chars (max {settings.max_doc_chars})")
+
+
+def _ingest_bytes(filename: str, data: bytes, source: str | None, collection: str, tags) -> dict:
+    # Parse first so the size limit applies to the extracted text, not just the raw bytes.
+    from .ingest.loaders import load_bytes
+
+    try:
+        title, text = load_bytes(filename, data)
+    except ValueError as e:
+        raise ToolError(str(e)) from e
+    _check_chars(text)
+    label = source or f"upload:{filename.replace(chr(92), '/').rsplit('/', 1)[-1]}"
+    r = _pipeline().ingest_text(text, source=label, title=title, collection=collection, tags=tags)
+    return {"doc_id": r.doc_id, "status": r.status, "chunks": r.chunks}
+
+
+@mcp.tool()
+def ingest_url(url: str, collection: str = "default", tags: list[str] | None = None) -> dict:
+    """Fetch a web page, PDF or DOCX by http(s) URL and ingest it. Private, loopback and
+    link-local addresses are refused; size, redirects and time are limited."""
+    try:
+        data, filename, _final = safe_fetch(url, max_bytes=settings.max_upload_bytes)
+    except BlockedURL as e:
+        raise ToolError(f"URL refused: {e}") from e
+    except Exception as e:  # network errors: report, don't leak internals
+        raise ToolError(f"fetch failed: {type(e).__name__}") from e
+    return _ingest_bytes(filename, data, url.strip(), collection, tags)
+
+
+@mcp.tool()
+def ingest_upload(filename: str, content_base64: str, collection: str = "default",
+                  tags: list[str] | None = None) -> dict:
+    """Ingest an uploaded file (md, txt, html, pdf, docx) sent as base64. Only the file
+    name's extension and basename are used; nothing is read from the server's disk."""
+    if len(content_base64) > settings.max_upload_bytes * 4 // 3 + 4:
+        raise ToolError(f"upload too large (max {settings.max_upload_bytes} bytes)")
+    try:
+        data = base64.b64decode(content_base64, validate=True)
+    except (binascii.Error, ValueError) as e:
+        raise ToolError("content_base64 is not valid base64") from e
+    if len(data) > settings.max_upload_bytes:
+        raise ToolError(f"upload too large (max {settings.max_upload_bytes} bytes)")
+    return _ingest_bytes(filename, data, None, collection, tags)
 
 
 @mcp.tool()

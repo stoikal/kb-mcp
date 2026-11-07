@@ -18,7 +18,7 @@ from mcp.types import CallToolResult, TextContent
 MIN_TOKEN_LEN = 24
 
 # Tools only admins may see or call. Everything else is available to readers.
-ADMIN_TOOLS = frozenset({"ingest_file", "ingest_text", "ingest_url", "delete_document", "reindex"})
+ADMIN_TOOLS = frozenset({"ingest_file", "ingest_text", "ingest_url", "ingest_upload", "delete_document", "reindex"})
 # Reads the server's disk: only offered over stdio (local development).
 STDIO_ONLY_TOOLS = frozenset({"ingest_file"})
 

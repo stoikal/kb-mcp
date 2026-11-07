@@ -102,7 +102,7 @@ def test_loaders(tmp_path):
     assert load_file(write(tmp_path, "n.txt", "halo"))[1] == "halo"
     assert load_file(write(tmp_path, "m.md", "# Judul\n\nisi"))[0] == "Judul"
     with pytest.raises(ValueError):
-        load_file(write(tmp_path, "x.docx", "x"))
+        load_file(write(tmp_path, "x.xyz", "x"))
 
 
 def test_pdf_loader(tmp_path):
