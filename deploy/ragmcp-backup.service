@@ -1,0 +1,8 @@
+[Unit]
+Description=ragmcp Postgres backup
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/servers/kb-mcp
+EnvironmentFile=%h/.config/ragmcp/ragmcp.env
+ExecStart=%h/servers/kb-mcp/deploy/backup.sh

@@ -1,0 +1,34 @@
+# User service. Install:
+#   mkdir -p ~/.config/systemd/user ~/.config/ragmcp
+#   cp deploy/ragmcp.service deploy/ragmcp-backup.service deploy/ragmcp-backup.timer ~/.config/systemd/user/
+#   cp deploy/ragmcp.env.example ~/.config/ragmcp/ragmcp.env && chmod 600 ~/.config/ragmcp/ragmcp.env   # then edit it
+#   systemctl --user daemon-reload && systemctl --user enable --now ragmcp.service ragmcp-backup.timer
+#   loginctl enable-linger "$USER"      # start at boot without logging in
+# Edit WorkingDirectory/ExecStart below if the project or `uv` live elsewhere (see: command -v uv).
+[Unit]
+Description=ragmcp knowledge-base MCP server (streamable HTTP)
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/servers/kb-mcp
+EnvironmentFile=%h/.config/ragmcp/ragmcp.env
+ExecStart=%h/.local/bin/uv run --no-dev ragmcp --transport streamable-http
+Restart=on-failure
+RestartSec=5
+# Models are large; allow a slow first start.
+TimeoutStartSec=300
+
+# Hardening that works for user services
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=%h/servers/kb-mcp %h/.cache %h/.local/state/ragmcp
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+
+[Install]
+WantedBy=default.target

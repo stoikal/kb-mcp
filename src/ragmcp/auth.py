@@ -48,6 +48,8 @@ class TokenRegistry:
             for t in tokens:
                 if len(t) < MIN_TOKEN_LEN:
                     raise ValueError(f"tokens must be at least {MIN_TOKEN_LEN} characters")
+                if "CHANGE_ME" in t:
+                    raise ValueError("replace the CHANGE_ME placeholder token from the example env file")
                 d = _digest(t)
                 if d in seen:
                     raise ValueError("the same token appears twice (or in both roles)")

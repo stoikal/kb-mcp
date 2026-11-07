@@ -19,6 +19,7 @@ dependencies = [
 
 [project.scripts]
 ragmcp = "ragmcp:main"
+ragmcp-eval = "ragmcp.evalset:main"
 
 [build-system]
 requires = ["uv_build>=0.13.7,<0.14.0"]

@@ -1,0 +1,16 @@
+{"q": "bagaimana pajak penghasilan orang pribadi dihitung", "expected": ["pajak.md#Pajak > Pajak penghasilan"]}
+{"q": "siapa yang wajib memungut PPN setiap bulan", "expected": ["pajak.md#Pajak > Pajak pertambahan nilai"]}
+{"q": "how is excise charged on cigarettes", "expected": ["pajak.md#Pajak > Cukai"]}
+{"q": "berapa hari cuti tahunan pekerja", "expected": ["cuti.md#Ketenagakerjaan > Cuti tahunan"]}
+{"q": "pekerja di-PHK dapat pesangon apa tidak", "expected": ["cuti.md#Ketenagakerjaan > Pemutusan hubungan kerja"]}
+{"q": "siapa yang menetapkan upah minimum", "expected": ["cuti.md#Ketenagakerjaan > Upah minimum"]}
+{"q": "why do oceans rise as the planet warms", "expected": ["climate.md#Climate > Sea level"]}
+{"q": "which gases trap heat and where do they come from", "expected": ["climate.md#Climate > Greenhouse gases"]}
+{"q": "how do coastal cities deal with flooding", "expected": ["climate.md#Climate > Adaptation"]}
+{"q": "cara membuat nasi goreng", "expected": ["cooking.md#Resep > Nasi goreng"]}
+{"q": "bahan sambal terasi", "expected": ["cooking.md#Resep > Sambal terasi"]}
+{"q": "how long to cook beef in coconut milk with spices", "expected": ["cooking.md#Resep > Rendang"]}
+{"q": "how to stop guests on wifi reaching my server", "expected": ["network.md#Home Server Guide > Firewall"]}
+{"q": "how often should I back up the database", "expected": ["network.md#Home Server Guide > Backups"]}
+{"q": "keep the machine IP stable after reboot", "expected": ["network.md#Home Server Guide > Fixed address"]}
+{"q": "PTKP", "expected": ["pajak.md#Pajak > Pajak penghasilan"]}

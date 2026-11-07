@@ -112,7 +112,7 @@ The project needs one model (`bge-m3`) and a second only if reranking is enabled
 
 ## Phases and status
 
-Phases 1 to 6 are done; deployment is next. The seven phases run in order.
+All seven phases are done; see `docs/DEPLOYMENT.md` to run the service. The seven phases run in order.
 
 | # | Phase | Delivers | Status |
 | --- | --- | --- | --- |
@@ -122,7 +122,7 @@ Phases 1 to 6 are done; deployment is next. The seven phases run in order.
 | 4 | Service layer | Streamable HTTP, bearer tokens with admin and reader roles, ingest and delete tools hidden from readers, rate limits | Done |
 | 5 | Hybrid and rerank | Wire RRF into `search`, optional cross-encoder reranker | Done |
 | 6 | More sources | URLs with SSRF guard, HTML, DOCX, uploads, `reindex` | Done |
-| 7 | Deployment | systemd unit and environment file, LAN binding with firewall rule and fixed IP, Postgres backups, logging, retrieval eval set | Not started |
+| 7 | Deployment | systemd unit and environment file, LAN binding with firewall rule and fixed IP, Postgres backups, logging, retrieval eval set | Done |
 
 ## Verification
 

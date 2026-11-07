@@ -3,6 +3,7 @@
 import argparse
 import base64
 import binascii
+import os
 from functools import lru_cache
 from typing import Literal
 
@@ -12,6 +13,7 @@ from mcp.server.mcpserver.exceptions import ToolError
 from . import __version__
 from .auth import BearerAuthMiddleware, RateLimiter, TokenRegistry, role_policy
 from .config import settings
+from .logging_config import setup_logging
 from .ingest.fetch import BlockedURL, safe_fetch
 from .ingest.pipeline import IngestPipeline
 from .ingest.embedder import SentenceTransformerEmbedder
@@ -220,9 +222,12 @@ def build_http_app(registry: TokenRegistry, host: str = "127.0.0.1"):
 def main() -> None:
     parser = argparse.ArgumentParser(prog="ragmcp")
     parser.add_argument("--transport", choices=["stdio", "streamable-http"], default="stdio")
-    parser.add_argument("--host", default="127.0.0.1", help="streamable-http bind address")
-    parser.add_argument("--port", type=int, default=8000)
+    parser.add_argument("--host", default=os.environ.get("RAGMCP_HOST", "127.0.0.1"),
+                        help="streamable-http bind address (env RAGMCP_HOST)")
+    parser.add_argument("--port", type=int, default=int(os.environ.get("RAGMCP_PORT", "8000")),
+                        help="streamable-http port (env RAGMCP_PORT)")
     args = parser.parse_args()
+    setup_logging()
     if args.transport == "stdio":
         mcp.run(transport="stdio")
         return
@@ -231,7 +236,7 @@ def main() -> None:
         parser.error("streamable-http needs RAGMCP_ADMIN_TOKENS and/or RAGMCP_READER_TOKENS")
     import uvicorn
 
-    uvicorn.run(build_http_app(registry, args.host), host=args.host, port=args.port, log_level="info")
+    uvicorn.run(build_http_app(registry, args.host), host=args.host, port=args.port, log_config=None)
 
 
 if __name__ == "__main__":
