@@ -78,7 +78,10 @@ def create_app(
                 return HTMLResponse("Cross-origin request refused", status_code=403)
         response = await call_next(request)
         response.headers["X-Frame-Options"] = "DENY"
-        response.headers["Referrer-Policy"] = "no-referrer"
+        # Not "no-referrer": with that policy Chrome sends `Origin: null` even on same-origin form
+        # POSTs, which the CSRF check above must (and does) refuse. "same-origin" keeps the real
+        # Origin on our own forms and still sends no referrer to other sites.
+        response.headers["Referrer-Policy"] = "same-origin"
         response.headers["Content-Security-Policy"] = (
             "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; "
             "form-action 'self'; frame-ancestors 'none'; base-uri 'none'"

@@ -138,6 +138,34 @@ def test_host_and_origin_guards():
     assert r.status_code == 303
 
 
+@pytest.mark.parametrize("host", ["192.168.8.185:8001", "10.0.0.5:8001", "127.0.0.1:8001", "public.example:8001"])
+def test_null_origin_is_refused_for_every_host(host, caplog):
+    # `Origin: null` is also what a sandboxed iframe or data: page sends when forging a POST, and the
+    # Host header is the *target's* address (private on a LAN), so it must never count as same-origin.
+    gw = FakeGateway({"delete_document": {}, "list_chunks": {"document": DOC, "chunks": []}})
+    c = TestClient(create_app(gw, allowed_hosts={_h(host)}))
+    with caplog.at_level("WARNING", logger="ragmcp.web"):
+        r = c.post("/doc/d1/delete", headers={"origin": "null", "host": host}, follow_redirects=False)
+    assert r.status_code == 403 and gw.calls == []
+    assert "origin='null'" in caplog.text and host in caplog.text
+
+
+def _h(host):
+    return host.rsplit(":", 1)[0]
+
+
+def test_real_origin_on_lan_host_is_accepted_and_referrer_policy_keeps_it_that_way():
+    # The upload bug: Chrome sent Origin: null because we set Referrer-Policy: no-referrer.
+    gw = FakeGateway({"ingest_upload": {"doc_id": "d1", "status": "created", "chunks": 1}})
+    host = "192.168.8.185:8001"
+    c = TestClient(create_app(gw, allowed_hosts={"192.168.8.185"}))
+    r = c.get("/", headers={"host": host})
+    assert r.headers["referrer-policy"] == "same-origin"
+    r = c.post("/upload/file", files={"file": ("a.md", b"# x")},
+               headers={"origin": f"http://{host}", "host": host})
+    assert r.status_code == 200 and gw.calls[0][0] == "ingest_upload"
+
+
 def test_unconfigured_gateway_is_a_clean_error():
     c = TestClient(create_app(None, allowed_hosts={"testserver"}))
     assert c.get("/browse").status_code == 502
