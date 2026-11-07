@@ -112,14 +112,14 @@ The project needs one model (`bge-m3`) and a second only if reranking is enabled
 
 ## Phases and status
 
-Phase 1 and the storage abstraction are done; ingestion is next. The seven phases run in order.
+Phases 1 to 4 are done; hybrid search and rerank are next. The seven phases run in order.
 
 | # | Phase | Delivers | Status |
 | --- | --- | --- | --- |
 | 1 | Skeleton | uv project, stdio server, `stats` tool, storage interface, in-memory backend, contract tests, RRF fusion | Done |
 | 2 | Ingest MVP | md, txt and pdf loaders, chunker, `bge-m3` embedder, `PostgresStore` (pgvector + full-text), hash dedup | Done |
 | 3 | Retrieval MVP | `search` (vector and keyword), filters, `get_chunk` with neighbours | Done |
-| 4 | Service layer | Streamable HTTP, bearer tokens with admin and reader roles, ingest and delete tools hidden from readers, rate limits | Not started |
+| 4 | Service layer | Streamable HTTP, bearer tokens with admin and reader roles, ingest and delete tools hidden from readers, rate limits | Done |
 | 5 | Hybrid and rerank | Wire RRF into `search`, optional cross-encoder reranker | Not started |
 | 6 | More sources | URLs with SSRF guard, HTML, DOCX, uploads, `reindex` | Not started |
 | 7 | Deployment | systemd unit and environment file, LAN binding with firewall rule and fixed IP, Postgres backups, logging, retrieval eval set | Not started |

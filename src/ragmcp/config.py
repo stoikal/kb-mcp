@@ -18,6 +18,14 @@ class Settings:
     chunk_tokens: int = int(os.environ.get("RAGMCP_CHUNK_TOKENS", "500"))
     chunk_overlap: int = int(os.environ.get("RAGMCP_CHUNK_OVERLAP", "60"))
 
+    # Service layer (hosted mode). Tokens are comma-separated; keep them in a root-only env file.
+    admin_tokens: str = os.environ.get("RAGMCP_ADMIN_TOKENS", "")
+    reader_tokens: str = os.environ.get("RAGMCP_READER_TOKENS", "")
+    rate_per_minute: int = int(os.environ.get("RAGMCP_RATE_PER_MIN", "60"))
+    rate_burst: int = int(os.environ.get("RAGMCP_RATE_BURST", "20"))
+    max_request_bytes: int = int(os.environ.get("RAGMCP_MAX_REQUEST_BYTES", str(4 * 1024 * 1024)))
+    max_doc_chars: int = int(os.environ.get("RAGMCP_MAX_DOC_CHARS", str(2_000_000)))
+
     @property
     def lance_dir(self) -> Path:
         return self.data_dir / "lancedb"

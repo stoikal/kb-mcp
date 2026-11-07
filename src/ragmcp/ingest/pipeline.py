@@ -68,3 +68,14 @@ class IngestPipeline:
         )
         self.store.replace_document(doc, chunks)
         return IngestResult(doc_id, "updated" if existing else "created", len(chunks))
+
+    def reindex(self) -> int:
+        """Re-embed every stored chunk with the current embedder; returns documents processed."""
+        docs = self.store.list_documents()
+        for doc in docs:
+            chunks = self.store.iter_chunks(doc.id)
+            vecs = self.embedder.embed([f"{c.heading_path}\n{c.text}" if c.heading_path else c.text for c in chunks])
+            for c, v in zip(chunks, vecs):
+                c.embedding = v
+            self.store.replace_document(doc, chunks)
+        return len(docs)
