@@ -117,8 +117,8 @@ Phase 1 and the storage abstraction are done; ingestion is next. The seven phase
 | # | Phase | Delivers | Status |
 | --- | --- | --- | --- |
 | 1 | Skeleton | uv project, stdio server, `stats` tool, storage interface, in-memory backend, contract tests, RRF fusion | Done |
-| 2 | Ingest MVP | md, txt and pdf loaders, chunker, `bge-m3` embedder, `PostgresStore` (pgvector + full-text), hash dedup | Not started |
-| 3 | Retrieval MVP | `search` (vector and keyword), filters, `get_chunk` with neighbours | Not started |
+| 2 | Ingest MVP | md, txt and pdf loaders, chunker, `bge-m3` embedder, `PostgresStore` (pgvector + full-text), hash dedup | Done |
+| 3 | Retrieval MVP | `search` (vector and keyword), filters, `get_chunk` with neighbours | Done |
 | 4 | Service layer | Streamable HTTP, bearer tokens with admin and reader roles, ingest and delete tools hidden from readers, rate limits | Not started |
 | 5 | Hybrid and rerank | Wire RRF into `search`, optional cross-encoder reranker | Not started |
 | 6 | More sources | URLs with SSRF guard, HTML, DOCX, uploads, `reindex` | Not started |
