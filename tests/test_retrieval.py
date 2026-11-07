@@ -97,6 +97,13 @@ def test_filters(rig):
     assert {h.chunk.doc_id for h in r.search("nasi", "vector", 5, Filters(doc_ids=[doc_id]))} == {doc_id}
 
 
+def test_hybrid_default_finds_both_kinds_of_match(rig):
+    r, _ = rig
+    # Exact keyword ("rokok") and a paraphrase with no shared words both land on top.
+    assert r.search("rokok")[0].chunk.heading_path == "Pajak > Cukai"
+    assert r.search("cara memasak nasi goreng")[0].chunk.heading_path == "Resep > Nasi goreng"
+
+
 def test_get_chunk_with_neighbours(rig):
     r, _ = rig
     hit = r.search("rokok", "keyword", 1)[0]
@@ -110,7 +117,7 @@ def test_get_chunk_with_neighbours(rig):
 
 def test_argument_validation(rig):
     r, _ = rig
-    for bad in [dict(query=" "), dict(query="x", top_k=0), dict(query="x", mode="hybrid")]:
+    for bad in [dict(query=" "), dict(query="x", top_k=0), dict(query="x", mode="semantic")]:
         with pytest.raises(ValueError):
             r.search(**bad)
     with pytest.raises(ValueError):

@@ -18,6 +18,11 @@ class Settings:
     chunk_tokens: int = int(os.environ.get("RAGMCP_CHUNK_TOKENS", "500"))
     chunk_overlap: int = int(os.environ.get("RAGMCP_CHUNK_OVERLAP", "60"))
 
+    # Reranking is off by default; enabling it downloads the cross-encoder on first use.
+    rerank: bool = os.environ.get("RAGMCP_RERANK", "0").lower() in ("1", "true", "yes", "on")
+    rerank_model: str = os.environ.get("RAGMCP_RERANK_MODEL", "BAAI/bge-reranker-v2-m3")
+    rerank_candidates: int = int(os.environ.get("RAGMCP_RERANK_CANDIDATES", "30"))
+
     # Service layer (hosted mode). Tokens are comma-separated; keep them in a root-only env file.
     admin_tokens: str = os.environ.get("RAGMCP_ADMIN_TOKENS", "")
     reader_tokens: str = os.environ.get("RAGMCP_READER_TOKENS", "")

@@ -13,6 +13,7 @@ from .config import settings
 from .ingest.pipeline import IngestPipeline
 from .ingest.embedder import SentenceTransformerEmbedder
 from .models import Chunk, Document, Filters, SearchHit
+from .retrieve.rerank import CrossEncoderReranker
 from .retrieve.search import Retriever
 from .store import create_store
 
@@ -38,7 +39,9 @@ def _services() -> tuple[Retriever, IngestPipeline]:
     store.init(EMBED_DIM)
     embedder = SentenceTransformerEmbedder(settings.embed_model, EMBED_DIM)
     pipeline = IngestPipeline(store, embedder, settings.chunk_tokens, settings.chunk_overlap)
-    return Retriever(store, embedder), pipeline
+    reranker = CrossEncoderReranker(settings.rerank_model) if settings.rerank else None
+    retriever = Retriever(store, embedder, reranker, settings.rerank, settings.rerank_candidates)
+    return retriever, pipeline
 
 
 def _retriever() -> Retriever:
@@ -66,17 +69,20 @@ def _hit_dict(h: SearchHit) -> dict:
 @mcp.tool()
 def search(
     query: str,
-    mode: Literal["vector", "keyword"] = "vector",
+    mode: Literal["hybrid", "vector", "keyword"] = "hybrid",
     top_k: int = 5,
     collection: str | None = None,
     tags: list[str] | None = None,
     doc_ids: list[str] | None = None,
+    rerank: bool | None = None,
 ) -> list[dict]:
     """Search the knowledge base. Returns chunks with source, title and heading path
-    for citation. mode: 'vector' (semantic) or 'keyword' (exact terms, any match).
-    Filters: collection, tags (match any), doc_ids."""
+    for citation. mode: 'hybrid' (default: semantic + keyword fused), 'vector' (semantic)
+    or 'keyword' (exact terms, any match). Filters: collection, tags (match any), doc_ids.
+    rerank: re-order candidates with a cross-encoder; omit for the server default
+    (off unless the admin enabled it); true errors if the server has no reranker."""
     filters = Filters(collection=collection, tags=tags, doc_ids=doc_ids)
-    return [_hit_dict(h) for h in _retriever().search(query, mode, top_k, filters)]
+    return [_hit_dict(h) for h in _retriever().search(query, mode, top_k, filters, rerank)]
 
 
 @mcp.tool()
