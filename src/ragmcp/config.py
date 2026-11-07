@@ -1,0 +1,30 @@
+"""Runtime settings, overridable via RAGMCP_* environment variables."""
+
+import os
+from dataclasses import dataclass, field
+from pathlib import Path
+
+
+def _default_data_dir() -> Path:
+    return Path(os.environ.get("RAGMCP_DATA_DIR", Path.cwd() / "data")).expanduser()
+
+
+@dataclass(frozen=True)
+class Settings:
+    data_dir: Path = field(default_factory=_default_data_dir)
+    embed_model: str = os.environ.get("RAGMCP_EMBED_MODEL", "BAAI/bge-m3")
+    store_backend: str = os.environ.get("RAGMCP_STORE", "postgres")
+    store_url: str = os.environ.get("RAGMCP_STORE_URL", "")  # e.g. postgresql://...
+    chunk_tokens: int = int(os.environ.get("RAGMCP_CHUNK_TOKENS", "500"))
+    chunk_overlap: int = int(os.environ.get("RAGMCP_CHUNK_OVERLAP", "60"))
+
+    @property
+    def lance_dir(self) -> Path:
+        return self.data_dir / "lancedb"
+
+    @property
+    def meta_db(self) -> Path:
+        return self.data_dir / "meta.sqlite"
+
+
+settings = Settings()
