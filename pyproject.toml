@@ -9,6 +9,10 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "mcp[cli]>=2.3.0",
+    "pgvector>=0.3",
+    "psycopg[binary]>=3.2",
+    "pypdf>=7.0.0",
+    "sentence-transformers>=3",
 ]
 
 [project.scripts]

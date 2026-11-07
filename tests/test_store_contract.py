@@ -10,7 +10,7 @@ from ragmcp.models import Chunk, Document, Filters
 from ragmcp.retrieve.fusion import rrf
 from ragmcp.store import KnowledgeStore, create_store
 
-BACKENDS = ["memory"]  # later: "lance", "postgres"
+BACKENDS = ["memory", "postgres"]  # later: "lance"
 DIM = 3
 
 
